@@ -5,3 +5,7 @@ gen:
 run:
     @echo 'running...'
     go run cmd/main.go
+
+proxy:
+    @echo 'running...'
+    go run proxy/cmd/main.go
