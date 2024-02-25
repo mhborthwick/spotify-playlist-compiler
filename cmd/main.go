@@ -12,5 +12,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("I'm running on host %s\n", cfg.Host)
+	fmt.Printf("I'm running on host %s\n", cfg.Id)
 }

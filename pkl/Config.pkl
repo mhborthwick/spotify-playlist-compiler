@@ -3,8 +3,8 @@ module mhborthwick.spotify.playlist.compiler.Config
 
 import "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.5.3#/go.pkl"
 
-/// The hostname of this application.
-host: String
+/// Client ID
+id: String
 
-/// The port to listen on.
-port: UInt16
+/// Client Secret
+secret: String

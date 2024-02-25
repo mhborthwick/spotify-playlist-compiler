@@ -8,11 +8,11 @@ import (
 )
 
 type Config struct {
-	// The hostname of this application.
-	Host string `pkl:"host"`
+	// Client ID
+	Id string `pkl:"id"`
 
-	// The port to listen on.
-	Port uint16 `pkl:"port"`
+	// Client Secret
+	Secret string `pkl:"secret"`
 }
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a Config
