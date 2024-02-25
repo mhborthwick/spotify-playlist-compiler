@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mhborthwick/spotify-playlist-compiler/appconfig"
+	"github.com/mhborthwick/spotify-playlist-compiler/.config"
 )
 
 func main() {
-	cfg, err := appconfig.LoadFromPath(context.Background(), "pkl/local/appConfig.pkl")
+	cfg, err := config.LoadFromPath(context.Background(), "pkl/local/config.pkl")
 	if err != nil {
 		panic(err)
 	}
