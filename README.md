@@ -1,1 +1,1 @@
-# spotify-playlist-squasher
+# spotify-playlist-compiler

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mhborthwick/spotify-playlist-squasher/appconfig"
+	"github.com/mhborthwick/spotify-playlist-compiler/appconfig"
 )
 
 func main() {

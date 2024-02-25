@@ -1,4 +1,4 @@
-module github.com/mhborthwick/spotify-playlist-squasher
+module github.com/mhborthwick/spotify-playlist-compiler
 
 go 1.21.1
 

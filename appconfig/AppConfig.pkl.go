@@ -1,4 +1,4 @@
-// Code generated from Pkl module `mhborthwick.spotify.playlist.squasher.AppConfig`. DO NOT EDIT.
+// Code generated from Pkl module `mhborthwick.spotify.playlist.compiler.AppConfig`. DO NOT EDIT.
 package appconfig
 
 import (
