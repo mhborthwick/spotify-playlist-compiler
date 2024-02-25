@@ -18,7 +18,7 @@ func GetRandomString() string {
 	return uuid.NewString()
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "hey")
 }
 
@@ -50,7 +50,7 @@ func main() {
 		},
 	}
 
-	http.HandleFunc("/", Handler)
+	http.HandleFunc("/", Index)
 	http.HandleFunc("/login", Authorize)
 	http.HandleFunc("/callback", Callback)
 
