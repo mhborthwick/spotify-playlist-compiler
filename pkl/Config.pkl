@@ -8,3 +8,12 @@ id: String
 
 /// Client Secret
 secret: String
+
+/// Access Token
+token: String
+
+/// Playlists
+playlists: Listing<String>
+
+/// Action
+action: "create" | "update"

@@ -13,6 +13,15 @@ type Config struct {
 
 	// Client Secret
 	Secret string `pkl:"secret"`
+
+	// Access Token
+	Token string `pkl:"token"`
+
+	// Playlists
+	Playlists []string `pkl:"playlists"`
+
+	// Action
+	Action string `pkl:"action"`
 }
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a Config
