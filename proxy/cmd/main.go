@@ -19,7 +19,7 @@ func GetRandomString() string {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "hey")
+	fmt.Fprint(w, "Placeholder")
 }
 
 func Authorize(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,15 @@ func Authorize(w http.ResponseWriter, r *http.Request) {
 
 func Callback(w http.ResponseWriter, r *http.Request) {
 	code := r.FormValue("code")
-	token, _ := authConfig.Exchange(r.Context(), code)
+	if code == "" {
+		fmt.Println("Unauthorized")
+		return
+	}
+	token, err := authConfig.Exchange(r.Context(), code)
+	if err != nil {
+		fmt.Println("Unauthorized")
+		return
+	}
 	fmt.Fprint(w, token.AccessToken)
 }
 
