@@ -17,14 +17,14 @@ type Track struct {
 	URI string `json:"uri"`
 }
 
-type GetPlaylistResponse struct {
+type GetPlaylistItemsResponse struct {
 	Items []struct {
 		Track Track `json:"track"`
 	} `json:"items"`
 }
 
 func GetSpotifyURIs(body []byte) ([]string, error) {
-	var parsed GetPlaylistResponse
+	var parsed GetPlaylistItemsResponse
 	if err := json.Unmarshal(body, &parsed); err != nil {
 		return nil, err
 	}
@@ -44,6 +44,27 @@ func GetSpotifyId(playlist string) (string, error) {
 	return id, nil
 }
 
+func GetSpotifyPlaylistItems(cfg *config.Config, id string, client *http.Client) ([]byte, error) {
+	url := "https://api.spotify.com/v1/playlists/" + id + "/tracks"
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	token := "Bearer " + cfg.Token
+	req.Header.Set("Authorization", token)
+	req.Header.Set("Content-Type", "application/json")
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
+}
+
 func main() {
 	cfg, err := config.LoadFromPath(context.Background(), "pkl/local/config.pkl")
 	if err != nil {
@@ -59,34 +80,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	url := "https://api.spotify.com/v1/playlists/" + id + "/tracks"
-	req, err := http.NewRequest("GET", url, nil)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	token := "Bearer " + cfg.Token
-	req.Header.Set("Authorization", token)
-	req.Header.Set("Content-Type", "application/json")
-
 	client := &http.Client{}
 
-	res, err := client.Do(req)
+	body, err := GetSpotifyPlaylistItems(cfg, id, client)
 
 	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	defer res.Body.Close()
-
-	body, err := io.ReadAll(res.Body)
-
-	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
 	uris, err := GetSpotifyURIs(body)
@@ -97,4 +97,6 @@ func main() {
 	}
 
 	fmt.Println(uris)
+
+	// now that we have uris, create a new blank playlist
 }
