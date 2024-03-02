@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"regexp"
 
 	"github.com/mhborthwick/spotify-playlist-compiler/config"
@@ -24,7 +26,6 @@ type GetPlaylistResponse struct {
 func GetSpotifyURIs(body []byte) ([]string, error) {
 	var parsed GetPlaylistResponse
 	if err := json.Unmarshal(body, &parsed); err != nil {
-		fmt.Println("Error")
 		return nil, err
 	}
 	uris := make([]string, len(parsed.Items))
@@ -32,6 +33,15 @@ func GetSpotifyURIs(body []byte) ([]string, error) {
 		uris[i] = item.Track.URI
 	}
 	return uris, nil
+}
+
+func GetSpotifyId(playlist string) (string, error) {
+	re := regexp.MustCompile(`[a-zA-Z0-9]{22}`)
+	id := re.FindString(playlist)
+	if id == "" {
+		return "", errors.New("Invalid playlist")
+	}
+	return id, nil
 }
 
 func main() {
@@ -42,13 +52,11 @@ func main() {
 
 	playlist := "https://open.spotify.com/playlist/4KMuVswhHsgHusA1hSdZQ5?si=a4b8123f214d470c"
 
-	re := regexp.MustCompile(`[a-zA-Z0-9]{22}`)
+	id, err := GetSpotifyId(playlist)
 
-	id := re.FindString(playlist)
-
-	if id == "" {
-		fmt.Printf("Invalid playlist")
-		return
+	if err != nil {
+		fmt.Printf(err.Error())
+		os.Exit(1)
 	}
 
 	url := "https://api.spotify.com/v1/playlists/" + id + "/tracks"
@@ -84,8 +92,8 @@ func main() {
 	uris, err := GetSpotifyURIs(body)
 
 	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
 	fmt.Println(uris)
