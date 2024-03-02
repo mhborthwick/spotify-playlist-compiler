@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/mhborthwick/spotify-playlist-compiler/.config"
+	"github.com/mhborthwick/spotify-playlist-compiler/config"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/spotify"
 )

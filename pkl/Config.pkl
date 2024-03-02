@@ -1,4 +1,4 @@
-@go.Package { name = "github.com/mhborthwick/spotify-playlist-compiler/.config" }
+@go.Package { name = "github.com/mhborthwick/spotify-playlist-compiler/config" }
 module mhborthwick.spotify.playlist.compiler.Config
 
 import "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.5.3#/go.pkl"

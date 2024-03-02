@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/mhborthwick/spotify-playlist-compiler/.config"
+	"github.com/mhborthwick/spotify-playlist-compiler/config"
 )
 
 type Track struct {
