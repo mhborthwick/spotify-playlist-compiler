@@ -1,4 +1,4 @@
-module github.com/mhborthwick/spotify-playlist-compiler/proxy
+module github.com/mhborthwick/spotify-playlist-compiler/auth
 
 go 1.21.1
 

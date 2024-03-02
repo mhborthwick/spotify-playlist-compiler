@@ -6,6 +6,6 @@ run:
     @echo 'running...'
     go run cmd/main.go
 
-proxy:
+auth:
     @echo 'running...'
-    go run proxy/cmd/main.go
+    go run auth/cmd/main.go
