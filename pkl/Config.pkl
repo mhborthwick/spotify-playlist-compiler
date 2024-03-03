@@ -4,10 +4,13 @@ module mhborthwick.spotify.playlist.compiler.Config
 import "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.5.3#/go.pkl"
 
 /// Client ID
-id: String
+clientID: String
 
 /// Client Secret
-secret: String
+clientSecret: String
+
+/// User ID
+userID: String
 
 /// Access Token
 token: String

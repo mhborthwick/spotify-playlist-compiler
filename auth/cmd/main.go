@@ -48,13 +48,15 @@ func main() {
 	}
 
 	authConfig = &oauth2.Config{
-		ClientID:     cfg.Id,
-		ClientSecret: cfg.Secret,
+		ClientID:     cfg.ClientID,
+		ClientSecret: cfg.ClientSecret,
 		RedirectURL:  "http://localhost:1337/callback",
 		Endpoint:     spotify.Endpoint,
 		Scopes: []string{
 			"user-read-email",
 			"user-read-private",
+			"playlist-modify-public",
+			"playlist-modify-private",
 		},
 	}
 

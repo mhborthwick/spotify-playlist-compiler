@@ -9,10 +9,13 @@ import (
 
 type Config struct {
 	// Client ID
-	Id string `pkl:"id"`
+	ClientID string `pkl:"clientID"`
 
 	// Client Secret
-	Secret string `pkl:"secret"`
+	ClientSecret string `pkl:"clientSecret"`
+
+	// User ID
+	UserID string `pkl:"userID"`
 
 	// Access Token
 	Token string `pkl:"token"`
