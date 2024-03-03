@@ -30,6 +30,14 @@ type CreatePlaylistRequestBody struct {
 	Public      bool   `json:"public"`
 }
 
+type CreatePlaylistResponseBody struct {
+	ID string `json:"id"`
+}
+
+type AddItemsToPlaylistRequestBody struct {
+	URIs []string `json:"uris"`
+}
+
 func GetSpotifyURIs(body []byte) ([]string, error) {
 	var parsed GetPlaylistItemsResponseBody
 	if err := json.Unmarshal(body, &parsed); err != nil {
@@ -51,7 +59,7 @@ func GetSpotifyId(playlist string) (string, error) {
 	return id, nil
 }
 
-func GetSpotifyPlaylistItems(cfg *config.Config, id string, client *http.Client) ([]byte, error) {
+func GetSpotifyPlaylistItems(cfg *config.Config, client *http.Client, id string) ([]byte, error) {
 	url := "https://api.spotify.com/v1/playlists/" + id + "/tracks"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -72,12 +80,49 @@ func GetSpotifyPlaylistItems(cfg *config.Config, id string, client *http.Client)
 	return body, nil
 }
 
-func CreateSpotifyPlaylist(cfg *config.Config, client *http.Client) ([]byte, error) {
+func CreateSpotifyPlaylist(cfg *config.Config, client *http.Client) (string, error) {
 	url := "https://api.spotify.com/v1/users/" + cfg.UserID + "/playlists"
 	requestData := CreatePlaylistRequestBody{
 		Name:        "New Playlist",
 		Description: "Created by Playlist Compiler",
 		Public:      false,
+	}
+	requestBody, err := json.Marshal(requestData)
+	if err != nil {
+		return "", err
+	}
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return "", err
+	}
+	token := "Bearer " + cfg.Token
+	req.Header.Set("Authorization", token)
+	req.Header.Set("Content-Type", "application/json")
+	res, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+	var parsed CreatePlaylistResponseBody
+	if err := json.Unmarshal(body, &parsed); err != nil {
+		return "", err
+	}
+	return parsed.ID, nil
+}
+
+func AddItemsToSpotifyPlaylist(
+	cfg *config.Config,
+	client *http.Client,
+	playlistID string,
+	uris []string,
+) ([]byte, error) {
+	url := "https://api.spotify.com/v1/playlists/" + playlistID + "/tracks"
+	requestData := AddItemsToPlaylistRequestBody{
+		URIs: uris,
 	}
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
@@ -96,9 +141,6 @@ func CreateSpotifyPlaylist(cfg *config.Config, client *http.Client) ([]byte, err
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
 	return body, nil
 }
 
@@ -119,7 +161,7 @@ func main() {
 
 	client := &http.Client{}
 
-	body, err := GetSpotifyPlaylistItems(cfg, id, client)
+	body, err := GetSpotifyPlaylistItems(cfg, client, id)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -133,15 +175,23 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(uris)
+	// fmt.Println(uris)
 
-	// now that we have uris, create a new blank playlist
-	created, err := CreateSpotifyPlaylist(cfg, client)
+	playlistID, err := CreateSpotifyPlaylist(cfg, client)
 
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
-	fmt.Println(created)
+	// fmt.Println(playlistID)
+
+	_, err = AddItemsToSpotifyPlaylist(cfg, client, playlistID, uris)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Println("Playlist created!")
 }
