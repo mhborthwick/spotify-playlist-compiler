@@ -9,3 +9,7 @@ run:
 auth:
     @echo 'running...'
     go run auth/cmd/main.go
+
+build:
+    @echo 'building...'
+    go build -o bin/spotify-playlist-compiler cmd/main.go
