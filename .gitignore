@@ -6,3 +6,6 @@ pkl/local/**/*
 
 # binary
 bin
+
+# env
+.env*

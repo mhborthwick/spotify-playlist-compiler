@@ -1,13 +1,14 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path"
 
 	"github.com/google/uuid"
-	"github.com/mhborthwick/spotify-playlist-compiler/config"
+	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/spotify"
 )
@@ -42,14 +43,20 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	cfg, err := config.LoadFromPath(context.Background(), "pkl/local/config.pkl")
+	dir, _ := os.Getwd()
+
+	err := godotenv.Load(path.Join(dir, "auth", ".env"))
+
 	if err != nil {
-		panic(err)
+		log.Fatal("Error loading .env file")
 	}
 
+	id := os.Getenv("CLIENT_ID")
+	secret := os.Getenv("CLIENT_SECRET")
+
 	authConfig = &oauth2.Config{
-		ClientID:     cfg.ClientID,
-		ClientSecret: cfg.ClientSecret,
+		ClientID:     id,
+		ClientSecret: secret,
 		RedirectURL:  "http://localhost:1337/callback",
 		Endpoint:     spotify.Endpoint,
 		Scopes: []string{
