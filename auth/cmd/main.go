@@ -5,10 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
 
 	"github.com/google/uuid"
-	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/spotify"
 )
@@ -43,16 +41,13 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	dir, _ := os.Getwd()
-
-	err := godotenv.Load(path.Join(dir, "auth", ".env"))
-
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	id := os.Getenv("CLIENT_ID")
 	secret := os.Getenv("CLIENT_SECRET")
+
+	if id == "" || secret == "" {
+		fmt.Println("Missing Env Vars")
+		return
+	}
 
 	authConfig = &oauth2.Config{
 		ClientID:     id,
