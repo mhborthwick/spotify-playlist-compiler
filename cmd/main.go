@@ -11,7 +11,8 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/mhborthwick/spotify-playlist-compiler/config"
+	"github.com/alecthomas/kong"
+	"github.com/apple/pkl-go/pkl"
 )
 
 type Track struct {
@@ -59,7 +60,7 @@ func GetSpotifyId(playlist string) (string, error) {
 	return id, nil
 }
 
-func GetSpotifyPlaylistItems(cfg *config.Config, client *http.Client, id string) ([]byte, error) {
+func GetSpotifyPlaylistItems(cfg *Config, client *http.Client, id string) ([]byte, error) {
 	url := "https://api.spotify.com/v1/playlists/" + id + "/tracks"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -80,7 +81,7 @@ func GetSpotifyPlaylistItems(cfg *config.Config, client *http.Client, id string)
 	return body, nil
 }
 
-func CreateSpotifyPlaylist(cfg *config.Config, client *http.Client) (string, error) {
+func CreateSpotifyPlaylist(cfg *Config, client *http.Client) (string, error) {
 	url := "https://api.spotify.com/v1/users/" + cfg.UserID + "/playlists"
 	requestData := CreatePlaylistRequestBody{
 		Name:        "New Playlist",
@@ -115,7 +116,7 @@ func CreateSpotifyPlaylist(cfg *config.Config, client *http.Client) (string, err
 }
 
 func AddItemsToSpotifyPlaylist(
-	cfg *config.Config,
+	cfg *Config,
 	client *http.Client,
 	playlistID string,
 	uris []string,
@@ -144,54 +145,81 @@ func AddItemsToSpotifyPlaylist(
 	return body, nil
 }
 
+type Config struct {
+	UserID    string   `pkl:"userID"`
+	Token     string   `pkl:"token"`
+	Playlists []string `pkl:"playlists"`
+}
+
+var CLI struct {
+	Create struct {
+		Path string `arg:"" name:"path" help:"Path to pkl file." type:"path"`
+	} `cmd:"" help:"Create playlist."`
+}
+
 func main() {
-	cfg, err := config.LoadFromPath(context.Background(), "pkl/local/config.pkl")
-	if err != nil {
-		panic(err)
+	ctx := kong.Parse(&CLI)
+	switch ctx.Command() {
+	case "create <path>":
+		fmt.Println("Evaluating from: " + CLI.Create.Path)
+
+		evaluator, err := pkl.NewEvaluator(context.Background(), pkl.PreconfiguredOptions)
+		if err != nil {
+			panic(err)
+		}
+		defer evaluator.Close()
+		var cfg Config
+		if err = evaluator.EvaluateModule(context.Background(), pkl.FileSource(CLI.Create.Path), &cfg); err != nil {
+			panic(err)
+		}
+
+		// fmt.Printf("Got module: %+v", cfg)
+
+		playlist := "https://open.spotify.com/playlist/4KMuVswhHsgHusA1hSdZQ5?si=a4b8123f214d470c"
+
+		id, err := GetSpotifyId(playlist)
+
+		if err != nil {
+			fmt.Printf(err.Error())
+			os.Exit(1)
+		}
+
+		client := &http.Client{}
+
+		body, err := GetSpotifyPlaylistItems(&cfg, client, id)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		uris, err := GetSpotifyURIs(body)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		// fmt.Println(uris)
+
+		playlistID, err := CreateSpotifyPlaylist(&cfg, client)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		// fmt.Println(playlistID)
+
+		_, err = AddItemsToSpotifyPlaylist(&cfg, client, playlistID, uris)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		fmt.Println("Playlist created!")
+	default:
+		panic(ctx.Command())
 	}
-
-	playlist := "https://open.spotify.com/playlist/4KMuVswhHsgHusA1hSdZQ5?si=a4b8123f214d470c"
-
-	id, err := GetSpotifyId(playlist)
-
-	if err != nil {
-		fmt.Printf(err.Error())
-		os.Exit(1)
-	}
-
-	client := &http.Client{}
-
-	body, err := GetSpotifyPlaylistItems(cfg, client, id)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-
-	uris, err := GetSpotifyURIs(body)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-
-	// fmt.Println(uris)
-
-	playlistID, err := CreateSpotifyPlaylist(cfg, client)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-
-	// fmt.Println(playlistID)
-
-	_, err = AddItemsToSpotifyPlaylist(cfg, client, playlistID, uris)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-
-	fmt.Println("Playlist created!")
 }

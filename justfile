@@ -25,7 +25,7 @@ gen:
 
 run:
     @echo 'running...'
-    go run cmd/main.go
+    go run cmd/main.go create pkl/local/example.pkl
 
 build:
     @echo 'building...'

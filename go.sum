@@ -1,3 +1,5 @@
+github.com/alecthomas/kong v0.9.0 h1:G5diXxc85KvoV2f0ZRVuMsi45IrBgx9zDNGNj165aPA=
+github.com/alecthomas/kong v0.9.0/go.mod h1:Y47y5gKfHp1hDc7CH7OeXgLIpp+Q2m1Ni0L5s3bI8Os=
 github.com/apple/pkl-go v0.5.3 h1:UF08uKZN3uLtozPOkQT/nz0E1yQlK+0JjLvCm/4sizA=
 github.com/apple/pkl-go v0.5.3/go.mod h1:Z6NTpWLcopDFz04cHMZyw872tJ/t2MzhnxNdeZZ5eQY=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
