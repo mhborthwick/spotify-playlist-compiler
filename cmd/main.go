@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/alecthomas/kong"
 	"github.com/apple/pkl-go/pkl"
@@ -21,6 +22,7 @@ func main() {
 	ctx := kong.Parse(&CLI)
 	switch ctx.Command() {
 	case "create <path>":
+		startNow := time.Now()
 		fmt.Println("Evaluating from: " + CLI.Create.Path)
 
 		evaluator, err := pkl.NewEvaluator(context.Background(), pkl.PreconfiguredOptions)
@@ -35,32 +37,34 @@ func main() {
 
 		// fmt.Printf("Got module: %+v", cfg)
 
-		playlist := "https://open.spotify.com/playlist/4KMuVswhHsgHusA1hSdZQ5?si=a4b8123f214d470c"
-
-		id, err := spotify.GetID(playlist)
-
-		if err != nil {
-			fmt.Printf(err.Error())
-			os.Exit(1)
-		}
-
 		client := &http.Client{}
 
-		body, err := spotify.GetPlaylistItems(&cfg, client, id)
+		var all []string
 
-		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
+		for _, p := range cfg.Playlists {
+			id, err := spotify.GetID(p)
+
+			if err != nil {
+				fmt.Printf(err.Error())
+				os.Exit(1)
+			}
+
+			body, err := spotify.GetPlaylistItems(&cfg, client, id)
+
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+
+			uris, err := spotify.GetURIs(body)
+
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+
+			all = append(all, uris...)
 		}
-
-		uris, err := spotify.GetURIs(body)
-
-		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
-
-		// fmt.Println(uris)
 
 		playlistID, err := spotify.CreatePlaylist(&cfg, client)
 
@@ -69,16 +73,14 @@ func main() {
 			os.Exit(1)
 		}
 
-		// fmt.Println(playlistID)
-
-		_, err = spotify.AddItemsToPlaylist(&cfg, client, playlistID, uris)
+		_, err = spotify.AddItemsToPlaylist(&cfg, client, playlistID, all)
 
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
 
-		fmt.Println("Playlist created!")
+		fmt.Println("Playlist created in: ", time.Since(startNow))
 	default:
 		panic(ctx.Command())
 	}
