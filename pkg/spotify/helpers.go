@@ -22,7 +22,6 @@ func GetURIs(body []byte) ([]string, error) {
 	if err := json.Unmarshal(body, &parsed); err != nil {
 		return nil, err
 	}
-	// fmt.Println(parsed)
 	uris := make([]string, len(parsed.Items))
 	for i, item := range parsed.Items {
 		uris[i] = item.Track.URI
