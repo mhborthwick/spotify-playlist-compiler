@@ -28,9 +28,8 @@ type AddItemsToPlaylistRequestBody struct {
 }
 
 // GetPlaylistItems gets the items (tracks) within a Spotify playlist.
-func GetPlaylistItems(cfg *Config, client *http.Client, id string) ([]byte, error) {
-	url := "https://api.spotify.com/v1/playlists/" + id + "/tracks"
-	req, err := http.NewRequest("GET", url, nil)
+func GetPlaylistItems(cfg *Config, client *http.Client, id string, url string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url+"/v1/playlists/"+id+"/tracks", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +49,7 @@ func GetPlaylistItems(cfg *Config, client *http.Client, id string) ([]byte, erro
 }
 
 // CreatePlaylist creates a new empty Spotify playlist.
-func CreatePlaylist(cfg *Config, client *http.Client) (string, error) {
-	url := "https://api.spotify.com/v1/users/" + cfg.UserID + "/playlists"
+func CreatePlaylist(cfg *Config, client *http.Client, url string) (string, error) {
 	requestData := CreatePlaylistRequestBody{
 		Name:        "New Playlist",
 		Description: "Created by Playlist Compiler",
@@ -61,7 +59,7 @@ func CreatePlaylist(cfg *Config, client *http.Client) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", url+"/v1/users/"+cfg.UserID+"/playlists", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return "", err
 	}
@@ -90,8 +88,8 @@ func AddItemsToPlaylist(
 	client *http.Client,
 	playlistID string,
 	uris []string,
+	url string,
 ) ([]byte, error) {
-	url := "https://api.spotify.com/v1/playlists/" + playlistID + "/tracks"
 	requestData := AddItemsToPlaylistRequestBody{
 		URIs: uris,
 	}
@@ -99,7 +97,7 @@ func AddItemsToPlaylist(
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", url+"/v1/playlists/"+playlistID+"/tracks", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, err
 	}
