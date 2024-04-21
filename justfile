@@ -27,6 +27,10 @@ run:
     @echo 'running...'
     go run cmd/main.go create pkl/local/example.pkl
 
+binary:
+    @echo 'running...'
+    bin/spotify-playlists-compiler create pkl/local/example.pkl
+
 build:
     @echo 'building...'
-    go build -o bin/spotify-playlist-compiler cmd/main.go
+    go build -o bin/spotify-playlists-compiler cmd/main.go
