@@ -1,4 +1,4 @@
-module github.com/mhborthwick/spotify-playlist-compiler
+module github.com/mhborthwick/spotify-playlists-compiler
 
 go 1.21.1
 

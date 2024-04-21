@@ -9,7 +9,7 @@ import (
 
 	"github.com/alecthomas/kong"
 	"github.com/apple/pkl-go/pkl"
-	"github.com/mhborthwick/spotify-playlist-compiler/pkg/spotify"
+	"github.com/mhborthwick/spotify-playlists-compiler/pkg/spotify"
 )
 
 var CLI struct {
