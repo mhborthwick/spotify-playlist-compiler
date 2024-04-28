@@ -65,6 +65,9 @@ func main() {
 		handleError(err)
 
 		var payloads [][]string
+
+		// creates multiple payloads with <=100 songs to send in batches
+		// as spotify caps you at 100 songs per request
 		for len(all) > 0 {
 			var payload []string
 			if len(all) >= 100 {
