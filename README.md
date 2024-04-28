@@ -1,4 +1,4 @@
-# spotify-playlists-compiler
+# spotify-playlists-combiner
 
 ## Requirements
 
