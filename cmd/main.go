@@ -18,6 +18,13 @@ var CLI struct {
 	} `cmd:"" help:"Create playlist."`
 }
 
+func handleError(err error) {
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+}
+
 func main() {
 	ctx := kong.Parse(&CLI)
 	switch ctx.Command() {
@@ -35,8 +42,6 @@ func main() {
 			panic(err)
 		}
 
-		// fmt.Printf("Got module: %+v", cfg)
-
 		spotifyClient := spotify.Spotify{
 			URL:    "https://api.spotify.com",
 			Token:  cfg.Token,
@@ -48,42 +53,18 @@ func main() {
 
 		for _, p := range cfg.Playlists {
 			id, err := spotify.GetID(p)
-
-			if err != nil {
-				fmt.Println(err.Error())
-				os.Exit(1)
-			}
-
+			handleError(err)
 			body, err := spotifyClient.GetPlaylistItems(id)
-
-			if err != nil {
-				fmt.Println(err.Error())
-				os.Exit(1)
-			}
-
+			handleError(err)
 			uris, err := spotify.GetURIs(body)
-
-			if err != nil {
-				fmt.Println(err.Error())
-				os.Exit(1)
-			}
-
+			handleError(err)
 			all = append(all, uris...)
 		}
 
 		playlistID, err := spotifyClient.CreatePlaylist()
-
-		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
-
+		handleError(err)
 		_, err = spotifyClient.AddItemsToPlaylist(all, playlistID)
-
-		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
+		handleError(err)
 
 		fmt.Println("Playlist created in: ", time.Since(startNow))
 	default:
