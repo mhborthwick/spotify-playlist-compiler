@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 type Spotify struct {
@@ -57,9 +59,12 @@ func (s Spotify) GetPlaylistItems(id string) ([]byte, error) {
 
 // CreatePlaylist creates a new empty Spotify playlist.
 func (s Spotify) CreatePlaylist() (string, error) {
+	currentTime := time.Now().Unix()
+	currentTimeString := strconv.FormatInt(currentTime, 10)
+	name := "Playlist " + currentTimeString
 	requestData := CreatePlaylistRequestBody{
-		Name:        "New Playlist",
-		Description: "Created by Playlist Compiler",
+		Name:        name,
+		Description: "Created by Playlists Combiner - https://github.com/mhborthwick/spotify-playlists-combiner",
 		Public:      false,
 	}
 	requestBody, err := json.Marshal(requestData)
