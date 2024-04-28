@@ -17,11 +17,13 @@ func TestGetPlaylistItems(t *testing.T) {
 			w.Write(mockResponse)
 		}))
 		defer mockServer.Close()
-		cfg := &Config{
-			Token: "YOUR_TOKEN",
+		spotifyClient := Spotify{
+			URL:    mockServer.URL,
+			Token:  "token",
+			UserID: "me",
+			Client: &http.Client{},
 		}
-		httpClient := &http.Client{}
-		data, err := GetPlaylistItems(cfg, httpClient, "123", mockServer.URL)
+		data, err := spotifyClient.GetPlaylistItems("123")
 		assert.Equal(t, mockResponse, data)
 		assert.Nil(t, err)
 	})
@@ -36,11 +38,13 @@ func TestCreatePlaylist(t *testing.T) {
 			w.Write(mockResponse)
 		}))
 		defer mockServer.Close()
-		cfg := &Config{
-			Token: "YOUR_TOKEN",
+		spotifyClient := Spotify{
+			URL:    mockServer.URL,
+			Token:  "token",
+			UserID: "me",
+			Client: &http.Client{},
 		}
-		httpClient := &http.Client{}
-		data, err := CreatePlaylist(cfg, httpClient, mockServer.URL)
+		data, err := spotifyClient.CreatePlaylist()
 		assert.Equal(t, "123", data)
 		assert.Nil(t, err)
 	})
@@ -55,11 +59,13 @@ func TestAddItemsToPlaylist(t *testing.T) {
 			w.Write(mockResponse)
 		}))
 		defer mockServer.Close()
-		cfg := &Config{
-			Token: "YOUR_TOKEN",
+		spotifyClient := Spotify{
+			URL:    mockServer.URL,
+			Token:  "token",
+			UserID: "me",
+			Client: &http.Client{},
 		}
-		httpClient := &http.Client{}
-		data, err := AddItemsToPlaylist(cfg, httpClient, "123", []string{"abc", "def"}, mockServer.URL)
+		data, err := spotifyClient.AddItemsToPlaylist([]string{"abc", "def"}, "123")
 		assert.Equal(t, mockResponse, data)
 		assert.Nil(t, err)
 	})

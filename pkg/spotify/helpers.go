@@ -11,7 +11,7 @@ func GetID(playlist string) (string, error) {
 	re := regexp.MustCompile(`[a-zA-Z0-9]{22}`)
 	id := re.FindString(playlist)
 	if id == "" {
-		return "", errors.New("Invalid playlist")
+		return "", errors.New("invalid playlist")
 	}
 	return id, nil
 }

@@ -29,7 +29,7 @@ func TestGetID(t *testing.T) {
 	t.Run("returns error", func(t *testing.T) {
 		invalid := "invalid"
 		_, err := GetID(invalid)
-		assert.EqualError(t, err, "Invalid playlist")
+		assert.EqualError(t, err, "invalid playlist")
 	})
 }
 

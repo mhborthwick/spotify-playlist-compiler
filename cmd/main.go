@@ -37,7 +37,12 @@ func main() {
 
 		// fmt.Printf("Got module: %+v", cfg)
 
-		client := &http.Client{}
+		spotifyClient := spotify.Spotify{
+			URL:    "https://api.spotify.com",
+			Token:  cfg.Token,
+			UserID: cfg.UserID,
+			Client: &http.Client{},
+		}
 
 		var all []string
 
@@ -49,7 +54,7 @@ func main() {
 				os.Exit(1)
 			}
 
-			body, err := spotify.GetPlaylistItems(&cfg, client, id, "https://api.spotify.com")
+			body, err := spotifyClient.GetPlaylistItems(id)
 
 			if err != nil {
 				fmt.Println(err.Error())
@@ -66,14 +71,14 @@ func main() {
 			all = append(all, uris...)
 		}
 
-		playlistID, err := spotify.CreatePlaylist(&cfg, client, "https://api.spotify.com")
+		playlistID, err := spotifyClient.CreatePlaylist()
 
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
 
-		_, err = spotify.AddItemsToPlaylist(&cfg, client, playlistID, all, "https://api.spotify.com")
+		_, err = spotifyClient.AddItemsToPlaylist(all, playlistID)
 
 		if err != nil {
 			fmt.Println(err.Error())
