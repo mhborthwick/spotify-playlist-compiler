@@ -63,8 +63,22 @@ func main() {
 
 		playlistID, err := spotifyClient.CreatePlaylist()
 		handleError(err)
-		_, err = spotifyClient.AddItemsToPlaylist(all, playlistID)
-		handleError(err)
+
+		var payloads [][]string
+		for len(all) > 0 {
+			var payload []string
+			if len(all) >= 100 {
+				payload, all = all[:100], all[100:]
+			} else {
+				payload, all = all, nil
+			}
+			payloads = append(payloads, payload)
+		}
+
+		for _, p := range payloads {
+			_, err = spotifyClient.AddItemsToPlaylist(p, playlistID)
+			handleError(err)
+		}
 
 		fmt.Println("Playlist created in: ", time.Since(startNow))
 	default:
