@@ -57,7 +57,7 @@ func main() {
 			baseURL := fmt.Sprintf("%s/v1/playlists/%s/tracks", spotifyClient.URL, id)
 			nextURL := baseURL
 			// you have to paginate these requests
-			// as spotify caps you at 20 songs per request
+			// because spotify caps you at 20 songs per request
 			for nextURL != "" {
 				body, err := spotifyClient.GetPlaylistItems(nextURL)
 				handleError(err)
@@ -72,16 +72,28 @@ func main() {
 		playlistID, err := spotifyClient.CreatePlaylist()
 		handleError(err)
 
+		// cleans duplicate songs
+		uniqueURIsMap := make(map[string]bool)
+		for _, uri := range all {
+			if _, found := uniqueURIsMap[uri]; !found {
+				uniqueURIsMap[uri] = true
+			}
+		}
+		unique := make([]string, 0, len(uniqueURIsMap))
+		for uri := range uniqueURIsMap {
+			unique = append(unique, uri)
+		}
+
 		var payloads [][]string
 
 		// creates multiple payloads with <=100 songs to send in batches
-		// as spotify caps you at 100 songs per request
-		for len(all) > 0 {
+		// because spotify caps you at 100 songs per request
+		for len(unique) > 0 {
 			var payload []string
-			if len(all) >= 100 {
-				payload, all = all[:100], all[100:]
+			if len(unique) >= 100 {
+				payload, unique = unique[:100], unique[100:]
 			} else {
-				payload, all = all, nil
+				payload, unique = unique, nil
 			}
 			payloads = append(payloads, payload)
 		}
