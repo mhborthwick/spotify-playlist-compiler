@@ -37,8 +37,8 @@ type AddItemsToPlaylistRequestBody struct {
 }
 
 // GetPlaylistItems gets the items (tracks) within a Spotify playlist.
-func (s Spotify) GetPlaylistItems(id string) ([]byte, error) {
-	req, err := http.NewRequest("GET", s.URL+"/v1/playlists/"+id+"/tracks", nil)
+func (s Spotify) GetPlaylistItems(url string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package spotify
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -23,7 +24,8 @@ func TestGetPlaylistItems(t *testing.T) {
 			UserID: "me",
 			Client: &http.Client{},
 		}
-		data, err := spotifyClient.GetPlaylistItems("123")
+		url := fmt.Sprintf("%s/v1/playlists/%s/tracks", spotifyClient.URL, "123")
+		data, err := spotifyClient.GetPlaylistItems(url)
 		assert.Equal(t, mockResponse, data)
 		assert.Nil(t, err)
 	})

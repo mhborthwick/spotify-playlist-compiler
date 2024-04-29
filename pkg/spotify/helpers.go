@@ -28,3 +28,18 @@ func GetURIs(body []byte) ([]string, error) {
 	}
 	return uris, nil
 }
+
+// GetNextURL returns the value of 'next' from
+// the response body.
+func GetNextURL(body []byte) (string, error) {
+	var response map[string]interface{}
+	if err := json.Unmarshal(body, &response); err != nil {
+		return "", err
+	}
+	nextValue := response["next"]
+	if nextValue == nil {
+		return "", nil
+	}
+	next := nextValue.(string)
+	return next, nil
+}

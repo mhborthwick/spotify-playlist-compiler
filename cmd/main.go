@@ -54,11 +54,19 @@ func main() {
 		for _, p := range cfg.Playlists {
 			id, err := spotify.GetID(p)
 			handleError(err)
-			body, err := spotifyClient.GetPlaylistItems(id)
-			handleError(err)
-			uris, err := spotify.GetURIs(body)
-			handleError(err)
-			all = append(all, uris...)
+			baseURL := fmt.Sprintf("%s/v1/playlists/%s/tracks", spotifyClient.URL, id)
+			nextURL := baseURL
+			// you have to paginate these requests
+			// as spotify caps you at 20 songs per request
+			for nextURL != "" {
+				body, err := spotifyClient.GetPlaylistItems(nextURL)
+				handleError(err)
+				uris, err := spotify.GetURIs(body)
+				handleError(err)
+				all = append(all, uris...)
+				nextURL, err = spotify.GetNextURL(body)
+				handleError(err)
+			}
 		}
 
 		playlistID, err := spotifyClient.CreatePlaylist()
@@ -83,7 +91,8 @@ func main() {
 			handleError(err)
 		}
 
-		fmt.Println("Playlist created in: ", time.Since(startNow))
+		fmt.Println("Playlist:", "https://open.spotify.com/playlist/"+playlistID)
+		fmt.Println("Created in:", time.Since(startNow))
 	default:
 		panic(ctx.Command())
 	}
