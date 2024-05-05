@@ -110,6 +110,17 @@ func main() {
 		fmt.Println("Created in:", time.Since(startNow))
 	case "sync <path>":
 		fmt.Println("Sync!")
+		// How this'll work
+		// - get all uris from target playlist
+		// - create map of target playlist ([string]: false)
+		// - get all uris from playlists provided via user's config file
+		// - store those uris in a slice
+		// - create a "toAdd" slice
+		// - if uri in target playlist, set value in map to true
+		// - if uri NOT in target playlist, add to toAdd slice
+		// - whatever remains will have a value of false (ie should be deleted)
+		// - ask if you want to sync songs, just to be safe - "x will be added, y will be deleted ok?"
+		// - execute
 	default:
 		panic(ctx.Command())
 	}
