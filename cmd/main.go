@@ -16,6 +16,9 @@ var CLI struct {
 	Create struct {
 		Path string `arg:"" name:"path" help:"Path to pkl file." type:"path"`
 	} `cmd:"" help:"Create playlist."`
+	Sync struct {
+		Path string `arg:"" name:"path" help:"Path to pkl file." type:"path"`
+	} `cmd:"" help:"Sync playlist."`
 }
 
 func handleError(err error) {
@@ -105,6 +108,8 @@ func main() {
 
 		fmt.Println("Playlist:", "https://open.spotify.com/playlist/"+playlistID)
 		fmt.Println("Created in:", time.Since(startNow))
+	case "sync <path>":
+		fmt.Println("Sync!")
 	default:
 		panic(ctx.Command())
 	}

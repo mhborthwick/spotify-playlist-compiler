@@ -31,6 +31,10 @@ binary:
     @echo 'running...'
     bin/spotify-playlists-compiler create pkl/local/example.pkl
 
+sync: 
+    @echo 'syncing...'
+    go run cmd/main.go sync pkl/local/example.pkl
+
 build:
     @echo 'building...'
     go build -o bin/spotify-playlists-compiler cmd/main.go
