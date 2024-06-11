@@ -30,16 +30,16 @@ func handleError(err error) {
 
 func main() {
 	ctx := kong.Parse(&CLI)
+	evaluator, err := pkl.NewEvaluator(context.Background(), pkl.PreconfiguredOptions)
+	if err != nil {
+		panic(err)
+	}
+	defer evaluator.Close()
 	switch ctx.Command() {
 	case "create <path>":
 		startNow := time.Now()
 		fmt.Println("Evaluating from: " + CLI.Create.Path)
 
-		evaluator, err := pkl.NewEvaluator(context.Background(), pkl.PreconfiguredOptions)
-		if err != nil {
-			panic(err)
-		}
-		defer evaluator.Close()
 		var cfg spotify.Config
 		if err = evaluator.EvaluateModule(context.Background(), pkl.FileSource(CLI.Create.Path), &cfg); err != nil {
 			panic(err)
@@ -77,14 +77,12 @@ func main() {
 
 		// cleans duplicate songs
 		uniqueURIsMap := make(map[string]bool)
+		unique := make([]string, 0, len(uniqueURIsMap))
 		for _, uri := range all {
 			if _, found := uniqueURIsMap[uri]; !found {
 				uniqueURIsMap[uri] = true
+				unique = append(unique, uri)
 			}
-		}
-		unique := make([]string, 0, len(uniqueURIsMap))
-		for uri := range uniqueURIsMap {
-			unique = append(unique, uri)
 		}
 
 		var payloads [][]string
@@ -109,7 +107,14 @@ func main() {
 		fmt.Println("Playlist:", "https://open.spotify.com/playlist/"+playlistID)
 		fmt.Println("Created in:", time.Since(startNow))
 	case "sync <path>":
-		fmt.Println("Sync!")
+		// startNow := time.Now()
+		fmt.Println("Evaluating from: " + CLI.Sync.Path)
+
+		var cfg spotify.SyncConfig
+		if err = evaluator.EvaluateModule(context.Background(), pkl.FileSource(CLI.Sync.Path), &cfg); err != nil {
+			panic(err)
+		}
+
 		// How this'll work
 		// - get all uris from target playlist
 		// - create map of target playlist ([string]: false)

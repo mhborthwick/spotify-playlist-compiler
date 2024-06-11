@@ -5,3 +5,8 @@ type Config struct {
 	Token     string   `pkl:"token"`
 	Playlists []string `pkl:"playlists"`
 }
+
+type SyncConfig struct {
+	*Config
+	Destination string `pkl:"destination"`
+}

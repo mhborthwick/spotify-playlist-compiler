@@ -64,7 +64,7 @@ func (s Spotify) CreatePlaylist() (string, error) {
 	name := "Playlist " + currentTimeString
 	requestData := CreatePlaylistRequestBody{
 		Name:        name,
-		Description: "Created by Playlists Combiner - https://github.com/mhborthwick/spotify-playlists-combiner",
+		Description: "Created with Playlists Combiner - https://github.com/mhborthwick/spotify-playlists-combiner",
 		Public:      false,
 	}
 	requestBody, err := json.Marshal(requestData)
